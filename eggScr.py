@@ -8,11 +8,10 @@ from bs4 import BeautifulSoup
 
 
 class Eggs:
-    def __init__(self, type, price, store, eggCount):
+    def __init__(self, type, price, store, entryDate):
         self.type = type
         self.price = price
         self.store = store
-        self.eggCount = eggCount
         self.entryDate = entryDate
 
 class Store:
@@ -32,20 +31,28 @@ class DataBaseManager:
                 type TEXT,
                 price REAL, 
                 store TEXT, 
-                entryDate DATE(YYYY-MM-DD)
+                entryDate DATE
         '''
         self.conn.execute(eggTableQuery)
         print("Table Created successfully.")
-    def saveEggs(self):
-        cur = self.conn.cursor()
 
-        cur.execute('''
+    def saveEggs(self, eggs):
+        cur = self.conn.cursor()
+        insertEggQuery = '''
         
         INSERT INTO Eggs (type, price, store, entryDate)
-            VALUES()
-         ''')
+            VALUES(?, ?, ?, ?)
+         '''
+        try: 
+            cur.execute(insertEggQuery,(Eggs.type, Eggs.price, Eggs.store))
+            self.conn.commit()
 
- 
-
-
-
+        except Exception as e:
+            print(f'Error committing data: {e}')
+        
+        else:
+            print("Commit Successful.")
+        
+        finally:
+            cur.close()
+            self.conn.close()
