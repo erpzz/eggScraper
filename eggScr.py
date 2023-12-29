@@ -24,15 +24,16 @@ class DataBaseManager:
     def __init__(self, db_Name):
         self.conn = sqlite3.connect(db_Name)
 
-    def createTables(self):
+    def createEggTable(self):
         eggTableQuery = ''' 
-            CREATE TABLE IF NOT EXISTS Eggs(
-                eggID INTEGER PRIMARY KEY AUTOINCREMENT,
-                type TEXT,
-                price REAL, 
-                store TEXT, 
-                entryDate DATE
-        '''
+        
+        CREATE TABLE IF NOT EXISTS Eggs(
+            EggID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Type TEXT,
+            Price REAL, 
+            Store TEXT, 
+            EntryDate DATE
+        )'''
         self.conn.execute(eggTableQuery)
         print("Table Created successfully.")
 
@@ -40,11 +41,45 @@ class DataBaseManager:
         cur = self.conn.cursor()
         insertEggQuery = '''
         
-        INSERT INTO Eggs (type, price, store, entryDate)
+        INSERT INTO Eggs (Type, Price, Store, EntryDate)
             VALUES(?, ?, ?, ?)
          '''
         try: 
             cur.execute(insertEggQuery,(Eggs.type, Eggs.price, Eggs.store))
+            self.conn.commit()
+
+        except Exception as e:
+            print(f'Error committing data: {e}')
+        
+        else:
+            print("Commit Successful.")
+        
+        finally:
+            cur.close()
+            self.conn.close()
+
+    def createStoreTable(self):
+        storeTableQuery = ''' 
+        
+        CREATE TABLE IF NOT EXISTS Stores(
+            StoreID INTEGER PRIMARY KEY AUTOINCREMENT,
+            StoreName TEXT
+            Town TEXT
+            State TEXT
+        )
+        '''
+        self.conn.execute(eggTableQuery)
+        print("Table Created Sucessfully.")
+        
+    def saveStore(self, stores):
+        cur = self.conn.cursor()
+        insertStoreQuery = ''' 
+            INSERT INTO Stores(StoreName, Town, State)
+            VALUES(?, ?, ?)
+            )
+        '''      
+        try:
+            cur.execute(insertStoreQuery,(Stores.storeName, Stores.Town, Stores.State))
             self.conn.commit()
 
         except Exception as e:
