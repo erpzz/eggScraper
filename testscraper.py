@@ -7,58 +7,50 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from bs4 import BeautifulSoup
 import requests 
 import time
+from selenium.webdriver.common.by import By
 
 
 def eggScraper():
     try:
         options = Options()
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         chromeDriverPath = '/usr/bin/chromedriver'
         options.add_experimental_option("detach", True)
-        chromeService = ChromeService(executable_path=chromeDriverPath)
+        chromeService = ChromeService()
         driver = webdriver.Chrome(service=chromeService, options=options)
-        url = ('https://www.target.com/s?searchTerm=eggs+12+ct&tref=typeahead%7Cterm%7Ceggs+12+ct%7C%7C%7Chistory')
+        url = ('https://www.target.com/s?searchTerm=eggs+12+ct&tref=typeahead%7Cterm%7Ceggs+12+ct%7C%7C%7C')
         driver.get(url)
+
         print('Website connecting, scraper waking up...')
-        time.sleep(1)
-       # print(f"Response code: {response.status_code}")
+        time.sleep(5)
+
         print("Parsing to begin.")
-        
-        productGrid = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located('div[data-test="product-grid"]')
+        print(driver.page_source)
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a[data-test="product-title"]'))
         )
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        truncate_divs = soup.select('div[data-test="product-grid"]')
+        selectors = soup.select('a[data-test="product-title"]')
 
-        print(f"Number of div elements with data-test: product-grid': {len(truncate_divs)}")
-        productTitles = productGrid.find_elements(By.CSS_SELECTOR, 'a[data-test="product-title"]')
-        for productTitle in productTitles:
-            print(productTitle.text.strip())
-            
-            
-        #time.sleep(2)
+        print(f"Number of a elements with data-test: product-title': {len(selectors)}")
 
-        # Filter div elements with an 'a' child element with data-test='product-title'
-       # 
-
-        # Print the number of found product titles
-        
-    # print(soup.prettify())
-
-       # productTitles = soup.select('a[data-test="product-grid"] a[data-test="product-table"]')
-       # 
-        
-       # print(f"Number of a elements with data-test: product-title': {len(productTitles)}")
+       
+        for productTitles in selectors:
+            productTitle = productTitles.select('a[data-test="product-title"]')
+            print(productTitles.prettify())
+            print(productTitle)
 
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred during the request: {e}")
+        print(f"An error occurred during the request: {type(e).__name__}: {e}")
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred: {type(e).__name__}: {e}")
 
 
     finally:
         print("Closing Connection")
-        #driver.quit()
+        driver.quit()
+        print(f"The number of products is : {len(selectors)}")
+
 eggScraper()
