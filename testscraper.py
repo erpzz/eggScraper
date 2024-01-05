@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 def eggScraper():
     try:
         options = Options()
-        # options.add_argument('--headless')
+       # options.add_argument('--headless')
         chromeDriverPath = '/usr/bin/chromedriver'
         options.add_experimental_option("detach", True)
         chromeService = ChromeService()
@@ -25,7 +25,6 @@ def eggScraper():
         time.sleep(5)
 
         print("Parsing to begin.")
-        print(driver.page_source)
         WebDriverWait(driver, 30).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'a[data-test="product-title"]'))
         )
@@ -33,13 +32,19 @@ def eggScraper():
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         selectors = soup.select('a[data-test="product-title"]')
 
-        print(f"Number of a elements with data-test: product-title': {len(selectors)}")
+        
 
-       
+        c = 0
+        non_egg_keywords = ['timer', 'color', 'dye', 'easter', 'hershey', 'candy']
         for productTitles in selectors:
-            productTitle = productTitles.select('a[data-test="product-title"]')
-            print(productTitles.prettify())
-            print(productTitle)
+            productName = productTitles.get_text().strip().lower()
+            if 'egg' in productName and not any(keyword in productName for keyword in non_egg_keywords):
+                c = c + 1
+                print(f'Listed egg result {c}: {productName}')
+            else:
+                print(f'Skipped non-egg result: {productName}')
+
+        print(f"The number of products is : {c  }")
 
     except requests.exceptions.RequestException as e:
         print(f"An error occurred during the request: {type(e).__name__}: {e}")
@@ -51,6 +56,6 @@ def eggScraper():
     finally:
         print("Closing Connection")
         driver.quit()
-        print(f"The number of products is : {len(selectors)}")
+       
 
 eggScraper()
