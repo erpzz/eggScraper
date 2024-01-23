@@ -164,7 +164,7 @@ def eggScraper():
             htmlContent = f.read()
         soup = BeautifulSoup(htmlContent, 'html.parser')
         locations = []
-        locationSelector = soup.select('span[class="styles__StyledNameSpan-sc-ujzcd7-6 fyQsDI"]')
+        locationSelector = soup.select('span[class="styles__StyledNameSpan-sc-ujzcd7-6 fpxndQ"]')
         for location in locationSelector:
             locationName = location.get_text().strip().lower()
             locations.append(locationName)
