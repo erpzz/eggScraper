@@ -1,0 +1,1 @@
+ # This will be used to check for changes to the websites structure in order to stay up to date. This will check for changes to selector's and suggest the new changes to be made to the selectors in the main file. 
